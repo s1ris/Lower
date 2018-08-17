@@ -115,4 +115,10 @@ extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void
 	waitpid(pid, &status, WEXITED);
 }
 
+- (void)_returnKeyPressed:(id)notification {
+    [self.view endEditing:1];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:@"org.s1ris.lower/notif" object:self];
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("org.s1ris.lower/notif"), nil, nil, true);
+}
+
 @end

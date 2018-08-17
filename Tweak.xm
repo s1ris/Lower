@@ -20,14 +20,11 @@ extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void
 
 UIEdgeInsets b;
 CGRect r;
-static dispatch_once_t onceToken;
-static id dclvref = nil;
 
 %hook SBDashBoardCombinedListViewController
 
 -(id) initWithNibName:(id)arg1 bundle:(id)arg2 {
     %orig;
-    dclvref = self;
     int notify_token2;
     notify_register_dispatch("org.s1ris.lower/notif", &notify_token2, dispatch_get_main_queue(), ^(int token) {
         [self _layoutListView];
@@ -91,12 +88,6 @@ static id dclvref = nil;
     else {
         return r;
     }
-}
-
-%new
-
-+(id) sharedLVCSpinXI {
-    return dclvref;
 }
 
 %end
