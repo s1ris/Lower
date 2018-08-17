@@ -1,0 +1,10 @@
+Package: org.s1ris.lower
+Name: Lower
+Depends: mobilesubstrate, firmware (>=11.0)
+Version: 1.2.1
+Architecture: iphoneos-arm
+Description: Change media controls/notifications height on iOS 11
+Depiction: https://apt.s1ris.org/depictions/?p=org.s1ris.lower
+Maintainer: s1ris
+Author: s1ris
+Section: Tweaks
