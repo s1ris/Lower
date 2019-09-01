@@ -15,20 +15,28 @@
 -(UIEdgeInsets) _listViewDefaultContentInsets {
     UIEdgeInsets originalInsets = %orig;
 
-    // Load prefs
-    float yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"yaxis"] floatValue];
-    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
-
-    // Only-lockScreen enabled AND *not* on the lockScreen
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
     if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
     {
         return originalInsets;
     }
-    else {
-        // Updates the insets
-        originalInsets.top += yOffset;
-        return originalInsets;
+
+    // Determine if in landscape and load associated Preferences (https://stackoverflow.com/a/9856895)
+    float yOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
     }
+    else
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitYStart"] floatValue];
+    }
+
+    // Updates the insets
+    originalInsets.top += yOffset;
+    return originalInsets;
 }
 
 -(void) _layoutListView {
@@ -39,35 +47,57 @@
 -(double) _minInsetsToPushDateOffScreen {
     double orig = %orig;
 
-    // Load prefs
-    float yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"yaxis"] floatValue];
-    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
-
-    // Only-lockScreen enabled AND *not* on the lockScreen
-    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3) {
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
+    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
+    {
         return orig;
     }
-    else {
-        return orig + yOffset;
+
+    // Determine if in landscape and load associated Preferences
+    float yOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
     }
+    else
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitYStart"] floatValue];
+    }
+
+    return orig + yOffset;
 }
 
 -(CGRect) _suggestedListViewFrame {
     CGRect originalRect = %orig;
 
-    // Load prefs
-    float xOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"xaxis"] floatValue];
-    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
+    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
+    {
+        return originalRect;
+    }
 
-    // Only-lockScreen enabled AND *not* on the lockScreen
-    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3) {
-        return originalRect;
+    // Determine if in landscape and load associated Preferences
+    float xOffset;
+    float xWidthOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        xOffset      = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeXStart"] floatValue];
+        xWidthOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeXWidth"] floatValue];
     }
-    else {
-        // Updates the originalRect
-        originalRect.origin.x += xOffset;
-        return originalRect;
+    else
+    {
+        xOffset      = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitXStart"] floatValue];
+        xWidthOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitXWidth"] floatValue];
     }
+
+    // Updates the originalRect
+    originalRect.origin.x   += xOffset;
+    originalRect.size.width += xWidthOffset;
+    return originalRect;
 }
 %end
 

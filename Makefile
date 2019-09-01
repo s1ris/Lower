@@ -1,5 +1,5 @@
 FINALPACKAGE=1
-export GO_EASY_ON_ME = 1
+INSTALL_TARGET_PROCESSES = SpringBoard
 
 include $(THEOS)/makefiles/common.mk
 
@@ -11,6 +11,3 @@ SUBPROJECTS = lowersettings
 
 include $(THEOS)/makefiles/tweak.mk
 include $(THEOS)/makefiles/aggregate.mk
-
-after-install::
-	install.exec "killall -9 backboardd"

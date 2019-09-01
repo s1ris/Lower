@@ -1,13 +1,11 @@
 FINALPACKAGE=1
-export GO_EASY_ON_ME = 1
 
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = LowerSettings
-
 LowerSettings_FILES = LowerSettings.mm
-LowerSettings_CFLAGS = -fobjc-arc
 LowerSettings_INSTALL_PATH = /Library/PreferenceBundles
+LowerSettings_CFLAGS = -fobjc-arc
 LowerSettings_PRIVATE_FRAMEWORKS = Preferences
 
 include $(THEOS)/makefiles/bundle.mk

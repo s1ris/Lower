@@ -1,7 +1,9 @@
-"A" = "Lockscreen Only";
-"B" = " ";
-"C" = "Horizontal Axis";
-"D" = " ";
-"E" = "Follow me on Twitter";
-"Z" = "Vertical Axis";
-"Y" = "Test Notification";
+"GeneralGroup"     = "General";
+"LockScreenOnly"   = "Lockscreen Only";
+"PortraitGroup"    = "Portrait";
+"YStartOffset"     = "Vertical Axis Start Offset";
+"XStartOffset"     = "Horizontal Axis Start Offset";
+"XWidthOffset"     = "Horizontal Axis Width Offset";
+"Landscape"        = "Landscape";
+"SocialGroup"      = "Social";
+"FollowTwitter"    = "Follow me on Twitter";
