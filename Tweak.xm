@@ -1,7 +1,7 @@
 #import <notify.h>
 #import "Tweak.h"
 #define PLIST_PATH @"/var/mobile/Library/Preferences/org.s1ris.lowersettings.plist"
-
+ 
 %hook SBDashBoardCombinedListViewController
 -(id) initWithNibName:(id)arg1 bundle:(id)arg2 {
     int notify_token2;
@@ -24,7 +24,7 @@
 
     // Determine if in landscape and load associated Preferences (https://stackoverflow.com/a/9856895)
     float yOffset;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [[objc_getClass("SpringBoard") sharedApplication] activeInterfaceOrientation];
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
     {
         yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
@@ -56,7 +56,7 @@
 
     // Determine if in landscape and load associated Preferences
     float yOffset;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [[objc_getClass("SpringBoard") sharedApplication] activeInterfaceOrientation];
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
     {
         yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
@@ -82,7 +82,7 @@
     // Determine if in landscape and load associated Preferences
     float xOffset;
     float xWidthOffset;
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIInterfaceOrientation orientation = [[objc_getClass("SpringBoard") sharedApplication] activeInterfaceOrientation];
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
     {
         xOffset      = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeXStart"] floatValue];
@@ -103,8 +103,19 @@
 
 %hook SBLockStateAggregator
 -(void) _updateLockState {
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("org.s1ris.lower/notif"), nil, nil, true);
     %orig;
     // Send the command to relayout
+    //CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("org.s1ris.lower/notif"), nil, nil, true);
+}
+%end
+
+%hook SpringBoard
+
+-(void) noteInterfaceOrientationChanged:(long long)arg1 duration:(double)arg2 logMessage:(id)arg3 {
+    %orig;
+    //send command to relayout when device changes orientation
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("org.s1ris.lower/notif"), nil, nil, true);
 }
+
 %end
