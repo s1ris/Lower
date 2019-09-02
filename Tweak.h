@@ -1,3 +1,8 @@
+@interface SpringBoard : UIApplication
++(id) sharedApplication;
+-(NSInteger) activeInterfaceOrientation;
+@end
+
 @interface SBDashBoardCombinedListViewController : UIViewController
 -(void) _updateListViewContentInset;
 -(void) _layoutListView;
