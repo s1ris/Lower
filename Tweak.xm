@@ -1,31 +1,11 @@
-#import <Foundation/Foundation.h>
-#import <CoreFoundation/CoreFoundation.h>
-#import <UIKit/UIKit.h>
 #import <notify.h>
+#import "Tweak.h"
 #define PLIST_PATH @"/var/mobile/Library/Preferences/org.s1ris.lowersettings.plist"
-extern "C" CFNotificationCenterRef CFNotificationCenterGetDistributedCenter(void);
-
-@interface SBDashBoardCombinedListViewController : UIViewController
--(void) _updateListViewContentInset;
--(void) _layoutListView;
--(UIEdgeInsets) _listViewDefaultContentInsets;
-+(id) sharedLVCSpinXI;
-@end
-
-@interface SBLockStateAggregator : NSObject {
-    unsigned long long _lockState;
-}
-+(id) sharedInstance;
-@end
-
-UIEdgeInsets b;
-CGRect r;
 
 %hook SBDashBoardCombinedListViewController
-
 -(id) initWithNibName:(id)arg1 bundle:(id)arg2 {
-    %orig;
     int notify_token2;
+    // Relayout on lockState change
     notify_register_dispatch("org.s1ris.lower/notif", &notify_token2, dispatch_get_main_queue(), ^(int token) {
         [self _layoutListView];
     });
@@ -33,21 +13,30 @@ CGRect r;
 }
 
 -(UIEdgeInsets) _listViewDefaultContentInsets {
-    b = %orig;
-    float f = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"yaxis"] floatValue];
-    bool lEnabled = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
-    UIEdgeInsets insets = { .left = b.left, .right = b.right, .top = b.top+f, .bottom = b.bottom };
-    if (lEnabled == 1) {
-        if (MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") == 3) {
-            return insets;
-        }
-        else {
-            return b;
-        }
+    UIEdgeInsets originalInsets = %orig;
+
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
+    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
+    {
+        return originalInsets;
     }
-    else {
-        return insets;
+
+    // Determine if in landscape and load associated Preferences (https://stackoverflow.com/a/9856895)
+    float yOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
     }
+    else
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitYStart"] floatValue];
+    }
+
+    // Updates the insets
+    originalInsets.top += yOffset;
+    return originalInsets;
 }
 
 -(void) _layoutListView {
@@ -57,50 +46,65 @@ CGRect r;
 
 -(double) _minInsetsToPushDateOffScreen {
     double orig = %orig;
-    float f = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"yaxis"] floatValue];
-    bool lEnabled = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
-    if (lEnabled == 1) {
-        if (MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") == 3) {
-            return orig +f;
-        }
-        else {
-            return orig;
-        }
+
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
+    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
+    {
+        return orig;
     }
-    else {
-        return orig + f;
+
+    // Determine if in landscape and load associated Preferences
+    float yOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeYStart"] floatValue];
     }
+    else
+    {
+        yOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitYStart"] floatValue];
+    }
+
+    return orig + yOffset;
 }
 
 -(CGRect) _suggestedListViewFrame {
-    CGRect orig = %orig;
-    float f = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"xaxis"] floatValue];
-    CGRect r = CGRectMake(orig.origin.x+f, orig.origin.y, orig.size.width, orig.size.height);
-    bool lEnabled = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreen"] boolValue];
-    if (lEnabled == 1) {
-        if (MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") == 3) {
-            return r;
-        }
-        else {
-            return orig;
-        }
-    }
-    else {
-        return r;
-    }
-}
+    CGRect originalRect = %orig;
 
+    // Only-lockScreen enabled AND *not* on the lockScreen -> doing noting
+    bool lockScreenOnly = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"lockScreenOnly"] boolValue];
+    if (lockScreenOnly == 1 && MSHookIvar<NSUInteger>([objc_getClass("SBLockStateAggregator") sharedInstance], "_lockState") != 3)
+    {
+        return originalRect;
+    }
+
+    // Determine if in landscape and load associated Preferences
+    float xOffset;
+    float xWidthOffset;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+    {
+        xOffset      = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeXStart"] floatValue];
+        xWidthOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"landscapeXWidth"] floatValue];
+    }
+    else
+    {
+        xOffset      = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitXStart"] floatValue];
+        xWidthOffset = [[[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH] valueForKey:@"portraitXWidth"] floatValue];
+    }
+
+    // Updates the originalRect
+    originalRect.origin.x   += xOffset;
+    originalRect.size.width += xWidthOffset;
+    return originalRect;
+}
 %end
 
 %hook SBLockStateAggregator
-
 -(void) _updateLockState {
     %orig;
+    // Send the command to relayout
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("org.s1ris.lower/notif"), nil, nil, true);
 }
-
 %end
-
-%ctor {
-    %init;
-}

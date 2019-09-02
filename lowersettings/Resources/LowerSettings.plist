@@ -7,8 +7,8 @@
 	    <dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>B</string>
+			<key>label</key>
+			<string>GeneralGroup</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -18,9 +18,15 @@
 			<key>defaults</key>
 			<string>org.s1ris.lowersettings</string>
 			<key>key</key>
-			<string>lockScreen</string>
+			<string>lockScreenOnly</string>
 			<key>label</key>
-			<string>A</string>
+			<string>LockScreenOnly</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>PortraitGroup</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -28,11 +34,25 @@
 			<key>defaults</key>
 			<string>org.s1ris.lowersettings</string>
 			<key>key</key>
-			<string>yaxis</string>
+			<string>portraitYStart</string>
 			<key>keyboard</key>
 			<string>numbers</string>
 			<key>label</key>
-			<string>Z</string>
+			<string>YStartOffset</string>
+			<key>PostNotification</key>
+			<string>org.s1ris.lower/settings.changed</string>
+		</dict>
+        <dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>org.s1ris.lowersettings</string>
+			<key>key</key>
+			<string>portraitXStart</string>
+			<key>keyboard</key>
+			<string>numbers</string>
+			<key>label</key>
+			<string>XStartOffset</string>
 			<key>PostNotification</key>
 			<string>org.s1ris.lower/settings.changed</string>
 		</dict>
@@ -42,19 +62,67 @@
 			<key>defaults</key>
 			<string>org.s1ris.lowersettings</string>
 			<key>key</key>
-			<string>xaxis</string>
+			<string>portraitXWidth</string>
 			<key>keyboard</key>
 			<string>numbers</string>
 			<key>label</key>
-			<string>C</string>
+			<string>XWidthOffset</string>
 			<key>PostNotification</key>
 			<string>org.s1ris.lower/settings.changed</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>D</string>
+			<key>label</key>
+			<string>Landscape</string>
+		</dict>
+        <dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>org.s1ris.lowersettings</string>
+			<key>key</key>
+			<string>landscapeYStart</string>
+			<key>keyboard</key>
+			<string>numbers</string>
+			<key>label</key>
+			<string>YStartOffset</string>
+			<key>PostNotification</key>
+			<string>org.s1ris.lower/settings.changed</string>
+		</dict>
+        <dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>org.s1ris.lowersettings</string>
+			<key>key</key>
+			<string>landscapeXStart</string>
+			<key>keyboard</key>
+			<string>numbers</string>
+			<key>label</key>
+			<string>XStartOffset</string>
+			<key>PostNotification</key>
+			<string>org.s1ris.lower/settings.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>defaults</key>
+			<string>org.s1ris.lowersettings</string>
+			<key>key</key>
+			<string>landscapeXWidth</string>
+			<key>keyboard</key>
+			<string>numbers</string>
+			<key>label</key>
+			<string>XWidthOffset</string>
+			<key>PostNotification</key>
+			<string>org.s1ris.lower/settings.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>SocialGroup</string>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -64,7 +132,7 @@
 			<key>icon</key>
 			<string>twitter.png</string>
 			<key>label</key>
-			<string>E</string>
+			<string>FollowTwitter</string>
 		</dict>
 	</array>
 	<key>title</key>
