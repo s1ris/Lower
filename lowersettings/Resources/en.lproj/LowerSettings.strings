@@ -5,5 +5,7 @@
 "XStartOffset"     = "Horizontal Axis Start Offset";
 "XWidthOffset"     = "Horizontal Axis Width Offset";
 "Landscape"        = "Landscape";
-"SocialGroup"      = "Social";
-"FollowTwitter"    = "Follow me on Twitter";
+"SocialGroup"      = "Credits";
+"FollowTwitter"    = "Follow @s1ris on Twitter";
+"OpenGithubMe"     = "See Lower on GitHub";
+"OpenGithubAu"     = "Special thanks to Autruche";
